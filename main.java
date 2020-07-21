@@ -1,12 +1,10 @@
-import naturalselection.food.Food;
-import java.util.Random;
+import naturalselection.creature.Creature;
 
 class Main{
-  private static int MAXSIZE = 250;
-  private static Random numbergenerator;
   public static void main(String[] args){
-    numbergenerator = new Random();
-    Food food1 = new Food(1+numbergenerator.nextInt(MAXSIZE), 1+numbergenerator.nextInt(MAXSIZE));
-    System.out.println(food1.getLocation().toString());
+    Creature c1 = new Creature(1, 1);
+    System.out.println(c1.toString());
+    Creature c2 = c1.reproduce(5, 5);
+    System.out.println(c2.toString());
   }
 }

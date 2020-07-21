@@ -24,6 +24,10 @@ public final class Vector{
   public void setY(short y){
     this.y = y;
   }
+  public void moveBy(Vector otherVec){
+    this.x += otherVec.getX();
+    this.y += otherVec.getY();
+  }
   public void moveTo(short x, short y){
     this.x = x;
     this.y = y;
@@ -46,5 +50,12 @@ public final class Vector{
     int nx = (int)(lx*speed);
     int ny = (int)(ly*speed);
     return new Vector((short)nx, (short)ny);
+  }
+  public boolean atLocation(Vector otherVec){
+    if(this.getHypotenuse(otherVec) <= atLocationDistance){
+      return true;
+    } else{
+      return false;
+    }
   }
 }
