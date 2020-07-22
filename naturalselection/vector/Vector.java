@@ -58,4 +58,7 @@ public final class Vector{
       return false;
     }
   }
+  public Vector copy(){
+    return new Vector(x, y);
+  }
 }

@@ -26,6 +26,9 @@ public class Food{
   public Vector getLocation(){
     return location;
   }
+  public int getIndex(){
+    return index;
+  }
   public boolean tryEat(){
     if(!isEaten){
       isEaten = true;
