@@ -1,13 +1,11 @@
-package naturalselection.food;
-
-import naturalselection.vector.Vector;
+package naturalselection;
 
 public class Food{
   private Vector location;
   private boolean isEaten;
   private int index;
-  public static Food[] food = new Food[175]; //Change amount of food here
-  public static int counter = 0;
+  static Food[] food = new Food[175]; //Change amount of food here
+  static int counter = 0;
 
 
   public Food(int x, int y){
@@ -28,6 +26,9 @@ public class Food{
   }
   public int getIndex(){
     return index;
+  }
+  public boolean getIsEaten(){
+      return isEaten;
   }
   public boolean tryEat(){
     if(!isEaten){
