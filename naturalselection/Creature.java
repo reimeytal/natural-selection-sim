@@ -9,20 +9,20 @@ public class Creature{
   private double sense;
   private double efficiency;
   private double energy;
-  private int index;
   private int foodThisDay;
   private Target target;
+  private int index;
 
   //Static members
   private static int counter = 0;
-  static ArrayList<Creature> creatures = new ArrayList<Creature>();
+  public static ArrayList<Creature> creatures = new ArrayList<Creature>();
   //Size of the world
   public static short MAX_X = 150;
   public static short MAX_Y = 150;
 
   /*This constructor is meant to be called at the start of the simulation.
   It is not meant to be called when mutations are supposed to occur.*/
-  Creature(int x, int y){
+  public Creature(int x, int y){
     //Setting values to default
     location = new Vector((short)x, (short)y);
     speed = 1.f;
@@ -39,22 +39,23 @@ public class Creature{
     counter++;
   }
   //Constructor with mutations. It is not meant to be called at the start of the simulation.
-  Creature(int x, int y, double speed, double size, double sense, double efficiency){
-    location = new Vector((short)x, (short)y);
-    this.speed = speed;
-    this.size = size;
-    this.sense = sense;
-    this.efficiency = efficiency; //Add penalty later; Efficiency currently has no disadvantages/weaknesses.
-    energy = 1.f;
-    target = null; //Change to go to frame
-    foodThisDay = 2;
+  private static Creature newCreature(int x, int y, double speed, double size, double sense, double efficiency){
+    Creature c = new Creature((short)x, (short)y);
+    c.speed = speed;
+    c.size = size;
+    c.sense = sense;
+    c.efficiency = efficiency; //Add penalty later; Efficiency currently has no disadvantages/weaknesses.
+    c.energy = 1.f;
+    c.target = null; //Change to go to frame
+    c.foodThisDay = 2;
 
     //Adding to creatures ArrayList
-    creatures.add(this);
-    index = counter;
+    creatures.add(c);
+    c.index = counter;
     counter++;
+    return c;
   }
-  private Creature reproduce(){
+  private void reproduce(){
     Random numbergenerator = new Random();
     boolean isNegative = (numbergenerator.nextInt(10)+1)%2 == 1;
     double nspeed, nsize, nsense, nefficiency;
@@ -81,11 +82,14 @@ public class Creature{
     } else{
       nefficiency = this.efficiency + ((double)(1+numbergenerator.nextInt(5))/100.f);
     }
-    return new Creature(location.getX(), location.getY(), nspeed, nsize, nsense, nefficiency);
+    newCreature(location.getX(), location.getY(), nspeed, nsize, nsense, nefficiency);
   }
   @Override
   public String toString(){
     return speed + " " + size + " " + sense + " " + efficiency + " " + energy;
+  }
+  public Vector getVector(){
+    return location;
   }
   private boolean tryEat(Food f){
     if(f.tryEat()){
@@ -223,5 +227,8 @@ public class Creature{
   }
   public Vector getLocation(){
     return location;
+  }
+  public double getEnergy(){
+    return energy;
   }
 }
