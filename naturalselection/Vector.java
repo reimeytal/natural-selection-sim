@@ -5,12 +5,11 @@ import java.lang.Math;
 public final class Vector{
   private short x;
   private short y;
-  private float atLocationDistance;
+  private static float atLocationDistance = 0.5f;
 
   public Vector(short x, short y){
     this.x = x;
     this.y = y;
-    atLocationDistance = 0.5f;
   }
   public short getX(){
     return x;
@@ -37,14 +36,14 @@ public final class Vector{
     return "("+this.x+", "+this.y+")";
   }
   public double getHypotenuse(Vector otherVec){
-    double diffx = (double)this.x - (double)otherVec.getX();
-    double diffy = (double)this.y - (double)otherVec.getY();
+    double diffx = (double)this.x - (double)otherVec.x;
+    double diffy = (double)this.y - (double)otherVec.y;
     return Math.sqrt((diffx*diffx)+(diffy*diffy));
   }
   public Vector getVelocity(Vector otherVec, float speed){
-    double diffx = (double)this.x - (double)otherVec.getX();
-    double diffy = (double)this.y - (double)otherVec.getY();
-    double hypotenuse = this.getHypotenuse(otherVec);
+    double diffx = (double)otherVec.x - (double)this.x;
+    double diffy = (double)otherVec.y - (double)this.x;
+    double hypotenuse = getHypotenuse(otherVec);
     double lx = diffx/hypotenuse;
     double ly = diffy/hypotenuse;
     int nx = (int)(lx*speed);
