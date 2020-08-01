@@ -1,11 +1,13 @@
 package naturalselection;
+import java.util.Random;
 
 public class Food{
   private Vector location;
   private boolean isEaten;
   private int index;
   static public Food[] food = new Food[175]; //Change amount of food here
-  static int counter = 0;
+  private static int counter = 0;
+  public static int MAX_X, MAX_Y, num_of_food;
 
 
   public Food(int x, int y){
@@ -36,6 +38,13 @@ public class Food{
       return true;
     } else{
       return false;
+    }
+  }
+  public static void resetFood(){
+    int i;
+    for(i=0;i<num_of_food;i++){
+      Random numbergenerator = new Random();
+      Food.food[i].reset(numbergenerator.nextInt()%MAX_X, numbergenerator.nextInt()%MAX_Y);
     }
   }
 }

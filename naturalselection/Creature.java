@@ -17,8 +17,8 @@ public class Creature{
   private static int counter = 0;
   public static ArrayList<Creature> creatures = new ArrayList<Creature>();
   //Size of the world
-  public static short MAX_X = 150;
-  public static short MAX_Y = 150;
+  public static short MAX_X;
+  public static short MAX_Y;
 
   /*This constructor is meant to be called at the start of the simulation.
   It is not meant to be called when mutations are supposed to occur.*/
