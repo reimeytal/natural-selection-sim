@@ -4,7 +4,7 @@ public class Food{
   private Vector location;
   private boolean isEaten;
   private int index;
-  static Food[] food = new Food[175]; //Change amount of food here
+  static public Food[] food = new Food[175]; //Change amount of food here
   static int counter = 0;
 
 

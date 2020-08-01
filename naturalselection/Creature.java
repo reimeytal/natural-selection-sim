@@ -182,7 +182,11 @@ public class Creature{
   public boolean action(){
     if(target ==  null && foodThisDay < 2){
       pickNewTarget();
-      move(this.location.getVelocity(target.location, (float)speed*7));
+      if(target != null){
+        move(this.location.getVelocity(target.location, (float)speed*7));
+      }  else{
+        pickNewFrame();
+      }
     } else{
       if(this.location.atLocation(target.location)){
         if(target.targettype == TARGETTYPE.FOOD){
