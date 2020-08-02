@@ -1,2 +1,2 @@
 # natural-selection-sim
-A simulation of natural selection
+A simulation of natural selection.

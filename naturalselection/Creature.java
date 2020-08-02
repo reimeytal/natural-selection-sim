@@ -1,17 +1,18 @@
 package naturalselection;
 
 import java.util.*; //For Random and ArrayList
+import java.lang.Math; //For Math.abs
 
 public class Creature{
-  private Vector location;
+  public Vector location;
   private double speed;
   private double size;
   private double sense;
-  private double efficiency;
   private double energy;
   private int foodThisDay;
   private Target target;
   private int index;
+  public boolean atFrame;
 
   //Static members
   private static int counter = 0;
@@ -28,10 +29,10 @@ public class Creature{
     speed = 1.f;
     size = 1.f;
     sense = 1.f;
-    efficiency = 1.f;
-    energy = 1.f;
+    energy = 2.5f;
     foodThisDay = 0;
     target = null;
+    atFrame = false;
 
     //Adding to creatures ArrayList
     creatures.add(this);
@@ -39,15 +40,15 @@ public class Creature{
     counter++;
   }
   //Constructor with mutations. It is not meant to be called at the start of the simulation.
-  private static Creature newCreature(int x, int y, double speed, double size, double sense, double efficiency){
+  private static Creature newCreature(int x, int y, double speed, double size, double sense){
     Creature c = new Creature((short)x, (short)y);
     c.speed = speed;
     c.size = size;
     c.sense = sense;
-    c.efficiency = efficiency; //Add penalty later; Efficiency currently has no disadvantages/weaknesses.
-    c.energy = 1.f;
+    c.energy = 2.5f;
     c.target = null; //Change to go to frame
     c.foodThisDay = 2;
+    c.pickNewFrame();
 
     //Adding to creatures ArrayList
     creatures.add(c);
@@ -55,45 +56,45 @@ public class Creature{
     counter++;
     return c;
   }
+  public double getSize(){
+    return size;
+  }
+  public double getSpeed(){
+    return speed;
+  }
+  public double getSense(){
+    return sense;
+  }
   private void reproduce(){
     Random numbergenerator = new Random();
-    boolean isNegative = (numbergenerator.nextInt(10)+1)%2 == 1;
-    double nspeed, nsize, nsense, nefficiency;
+    boolean isNegative = Math.abs((numbergenerator.nextInt(10)+1)%2) == 1;
+    double nspeed, nsize, nsense;
     if(isNegative){
-      nspeed = this.speed + ((double)((1+numbergenerator.nextInt(5))*-1)/100.f);
+      nspeed = this.speed + ((double)(Math.abs(1+numbergenerator.nextInt(5))*-1)/100.f);
     } else{
-      nspeed = this.speed + ((double)(1+numbergenerator.nextInt(5))/100.f);
+      nspeed = this.speed + ((double)Math.abs(1+numbergenerator.nextInt(5))/100.f);
     }
-    isNegative = (numbergenerator.nextInt(10)+1)%2 == 1;
+    isNegative = Math.abs((numbergenerator.nextInt(10)+1)%2) == 1;
     if(isNegative){
-      nsize = this.size + ((double)((1+numbergenerator.nextInt(5))*-1)/100.f);
+      nsize = this.size + ((double)(Math.abs(1+numbergenerator.nextInt(5))*-1)/100.f);
     } else{
-      nsize = this.size + ((double)(1+numbergenerator.nextInt(5))/100.f);
+      nsize = this.size + ((double)Math.abs(1+numbergenerator.nextInt(5))/100.f);
     }
-    isNegative = (numbergenerator.nextInt(10)+1)%2 == 1;
+    isNegative = Math.abs((numbergenerator.nextInt(10)+1)%2) == 1;
     if(isNegative){
-      nsense = this.sense + ((double)((1+numbergenerator.nextInt(5))*-1)/100.f);
+      nsense = this.sense + ((double)(Math.abs(1+numbergenerator.nextInt(5))*-1)/100.f);
     } else{
-      nsense = this.sense + ((double)(1+numbergenerator.nextInt(5))/100.f);
+      nsense = this.sense + ((double)Math.abs(1+numbergenerator.nextInt(5))/100.f);
     }
-    isNegative = (numbergenerator.nextInt(10)+1)%2 == 1;
-    if(isNegative){
-      nefficiency = this.efficiency + ((double)((1+numbergenerator.nextInt(5))*-1)/100.f);
-    } else{
-      nefficiency = this.efficiency + ((double)(1+numbergenerator.nextInt(5))/100.f);
-    }
-    newCreature(location.getX(), location.getY(), nspeed, nsize, nsense, nefficiency);
+    newCreature(location.getX(), location.getY(), nspeed, nsize, nsense);
   }
   @Override
   public String toString(){
-    return speed + " " + size + " " + sense + " " + efficiency + " " + energy;
-  }
-  public Vector getVector(){
-    return location;
+    return "Creature #" + index + " | "+size + " " + " " + speed + " " + sense;
   }
   private boolean tryEat(Food f){
     if(f.tryEat()){
-      energy++;
+      energy+=2.5f;
       foodThisDay++;
       return true;
     } else{
@@ -101,22 +102,33 @@ public class Creature{
     }
   }
   private boolean tryEat(Creature otherCreature){
-    if(this.size/otherCreature.size <= 0.8f){
-      Creature.creatures.set(otherCreature.index, null);
-      energy++;
-      foodThisDay++;
-      return true;
-    } else{
-      return false;
+    if(otherCreature != null){
+      if(this.size/otherCreature.size <= 0.8f){
+        Creature.creatures.set(otherCreature.index, null);
+        energy++;
+        foodThisDay++;
+        return true;
+      } else{
+        return false;
+      }
     }
+    return false;
   }
   private void move(Vector velocity){
-    energy -= 0.1f;
-    location.moveBy(velocity);
+    energy -= ((0.1f * size) * speed) * sense;
+    if(this.location.getHypotenuse(target.location) <= speed*7){
+      this.location = target.location.copy();
+    } else{
+      location.moveBy(velocity);
+    }
   }
   private boolean inRange(Food targetFood){
     if(targetFood.getLocation().getHypotenuse(this.location) <= this.sense*21){
-      return true;
+      if(!targetFood.getIsEaten()){
+        return true;
+      } else{
+        return false;
+      }
     } else{
       return false;
     }
@@ -137,10 +149,12 @@ public class Creature{
         }
       }
     }
-    for(int i=0;i<175;i++){
-      if(inRange(Food.food[i])){
-        target = new Target<Food>(Food.food[i]);
-        return;
+    for(int i=0;i<75;i++){ //Change when changing number of food
+      if(Food.food[i] != null){
+        if(inRange(Food.food[i])){
+          target = new Target<Food>(Food.food[i]);
+          return;
+        }
       }
     }
   }
@@ -175,24 +189,26 @@ public class Creature{
       }
     }
   }
-  public void reset(){
+  public void reset(){ //Gets called at the end of each day
     foodThisDay = 0;
     target = null;
+    atFrame = false;
   }
   public boolean action(){
-    if(target ==  null && foodThisDay < 2){
+    if(atFrame){
+      return true;
+    }
+    if(target == null && foodThisDay < 2){
       pickNewTarget();
       if(target != null){
         move(this.location.getVelocity(target.location, (float)speed*7));
-      }  else{
+      } else{
         pickNewFrame();
       }
     } else{
       if(this.location.atLocation(target.location)){
         if(target.targettype == TARGETTYPE.FOOD){
-          if(tryEat(Food.food[target.index])){
-            foodThisDay++;
-          }
+          tryEat(Food.food[target.index]);
           if(foodThisDay >= 2){
             reproduce();
             pickNewFrame();
@@ -200,9 +216,7 @@ public class Creature{
             target = null;
           }
         } else if(target.targettype == TARGETTYPE.CREATURE){
-          if(tryEat(creatures.get(target.index))){
-            foodThisDay++;
-          }
+          tryEat(creatures.get(target.index));
           if(foodThisDay >= 2){
             reproduce();
             pickNewFrame();
@@ -212,13 +226,21 @@ public class Creature{
         }
       } else{
         if(target.targettype == TARGETTYPE.CREATURE){
-          if(!target.location.atLocation(creatures.get(target.index).location)){
+          if(creatures.get(target.index) != null){
+            if(!target.location.atLocation(creatures.get(target.index).location)){
+              target = null;
+            } else{
+              move(this.location.getVelocity(target.location, (float)speed*7));
+            }
+          } else{
+            pickNewTarget();
+          }
+        } else if(target.targettype == TARGETTYPE.FOOD){
+          if(Food.food[target.index].getIsEaten()){
             target = null;
           } else{
-            move(this.location.getVelocity(target.location, (float)speed*7));
+              move(this.location.getVelocity(target.location, (float)speed*7));
           }
-        } else if(Food.food[target.index].getIsEaten()){
-          target = null;
         } else{
           move(this.location.getVelocity(target.location, (float)speed*7));
         }
